@@ -1,0 +1,14 @@
+@import "../variables";
+
+.content-container {
+  padding: 20px;
+  min-height: calc(100vh - 128px); // Adjust for header and footer height
+}
+
+footer {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  background-color: $primary;
+  color: white;
+}

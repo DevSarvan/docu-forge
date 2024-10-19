@@ -1,12 +1,18 @@
-import { Component, OnInit } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  ViewChild,
+  ElementRef,
+  AfterViewChecked,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
-import { MatListModule } from '@angular/material/list';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
 import { PdfViewerModule } from 'ng2-pdf-viewer';
 import { LoaderComponent } from '../loader/loader.component';
 
@@ -19,16 +25,18 @@ import { LoaderComponent } from '../loader/loader.component';
     MatCardModule,
     MatButtonModule,
     MatInputModule,
-    MatListModule,
     MatFormFieldModule,
+    MatIconModule,
     PdfViewerModule,
     LoaderComponent,
   ],
   templateUrl: './pdf-ai-chat.component.html',
   styleUrls: ['./pdf-ai-chat.component.scss'],
 })
-export class PdfAiChatComponent implements OnInit {
-  pdfSrc: string | Uint8Array | undefined | null = null;
+export class PdfAiChatComponent implements OnInit, AfterViewChecked {
+  @ViewChild('chatMessages') private chatMessagesContainer!: ElementRef;
+
+  pdfSrc: string | null = null;
   messages: { text: string; isUser: boolean }[] = [];
   currentMessage = '';
   isLoading = true;
@@ -42,12 +50,30 @@ export class PdfAiChatComponent implements OnInit {
     }, 2000); // Change this to actual asset loading time
   }
 
+  ngAfterViewChecked() {
+    this.scrollToBottom();
+  }
+
+  scrollToBottom(): void {
+    try {
+      this.chatMessagesContainer.nativeElement.scrollTop =
+        this.chatMessagesContainer.nativeElement.scrollHeight;
+    } catch (err) {}
+  }
+
   onFileSelected(event: any): void {
     const file: File = event.target.files[0];
     if (file) {
       this.isLoading = true;
       const formData = new FormData();
       formData.append('pdf', file);
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (event: ProgressEvent<FileReader>) => {
+          this.pdfSrc = event.target?.result as string;
+        };
+        reader.readAsDataURL(file);
+      }
 
       // TODO: Replace with your actual upload API endpoint
       this.http.post('/api/upload-pdf', formData).subscribe({
@@ -83,5 +109,11 @@ export class PdfAiChatComponent implements OnInit {
 
       this.currentMessage = '';
     }
+  }
+
+  adjustTextareaHeight(event: any): void {
+    const textarea = event.target;
+    textarea.style.height = 'auto';
+    textarea.style.height = textarea.scrollHeight + 'px';
   }
 }

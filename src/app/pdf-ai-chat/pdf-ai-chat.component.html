@@ -1,14 +1,14 @@
 <app-loader *ngIf="isLoading"></app-loader>
 
-<div class="container-fluid">
-  <div class="row">
-    <!-- Left panel (65% width) -->
-    <div class="col-8">
-      <mat-card class="h-100">
+<div class="container-fluid h-100">
+  <div class="row h-100 flex-column flex-md-row">
+    <!-- PDF panel (full width on small screens, 65% on medium and larger) -->
+    <div class="col-12 col-md-8 h-md-100 mb-3 mb-md-0">
+      <mat-card class="h-100 d-flex flex-column">
         <mat-card-header>
           <mat-card-title>PDF Upload and Preview</mat-card-title>
         </mat-card-header>
-        <mat-card-content>
+        <mat-card-content class="flex-grow-1">
           <input
             type="file"
             (change)="onFileSelected($event)"
@@ -19,45 +19,52 @@
             *ngIf="pdfSrc"
             [src]="pdfSrc"
             [render-text]="true"
-            style="width: 100%; height: 600px"
+            class="pdf-viewer"
           ></pdf-viewer>
         </mat-card-content>
       </mat-card>
     </div>
 
-    <!-- Right panel (35% width) -->
-    <div class="col-4">
+    <!-- Chat panel (full width on small screens, 35% on medium and larger) -->
+    <div class="col-12 col-md-4 h-md-100">
       <mat-card class="h-100 d-flex flex-column">
         <mat-card-header>
           <mat-card-title>Chat with AI</mat-card-title>
         </mat-card-header>
-        <mat-card-content class="flex-grow-1 overflow-auto">
-          <mat-list>
-            <mat-list-item *ngFor="let message of messages">
-              <div
-                [ngClass]="{
-                  'chat-message': true,
-                  user: message.isUser,
-                  ai: !message.isUser
-                }"
-              >
+        <mat-card-content class="flex-grow-1 d-flex flex-column">
+          <div #chatMessages class="chat-messages flex-grow-1">
+            <div
+              *ngFor="let message of messages"
+              class="message-container"
+              [ngClass]="{
+                'user-message': message.isUser,
+                'ai-message': !message.isUser
+              }"
+            >
+              <div class="message-bubble">
                 {{ message.text }}
               </div>
-            </mat-list-item>
-          </mat-list>
+            </div>
+          </div>
         </mat-card-content>
-        <mat-card-actions>
-          <form (ngSubmit)="sendMessage()" class="d-flex">
-            <mat-form-field class="flex-grow-1 mr-2">
-              <input
-                matInput
-                [(ngModel)]="currentMessage"
-                name="message"
-                placeholder="Type your message..."
-              />
-            </mat-form-field>
-            <button mat-raised-button color="primary" type="submit">
-              Send
+        <mat-card-actions class="chat-input-container">
+          <form (ngSubmit)="sendMessage()" class="chat-form">
+            <textarea
+              matInput
+              [(ngModel)]="currentMessage"
+              name="message"
+              placeholder="Type your message..."
+              class="chat-textarea"
+              rows="3"
+              (input)="adjustTextareaHeight($event)"
+            ></textarea>
+            <button
+              mat-icon-button
+              color="primary"
+              type="submit"
+              class="send-button"
+            >
+              <mat-icon>send</mat-icon>
             </button>
           </form>
         </mat-card-actions>

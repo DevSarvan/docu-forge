@@ -1,14 +1,29 @@
-@import "../variables";
-
-.content-container {
-  padding: 20px;
-  min-height: calc(100vh - 128px); // Adjust for header and footer height
+.app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
 }
 
-footer {
-  position: fixed;
+.app-header {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.content-container {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.app-footer {
+  position: sticky;
   bottom: 0;
-  width: 100%;
-  background-color: $primary;
-  color: white;
+  z-index: 1000;
+}
+
+@media (max-width: 767px) {
+  .content-container {
+    padding-bottom: 56px; // Adjust this value based on your footer height
+  }
 }

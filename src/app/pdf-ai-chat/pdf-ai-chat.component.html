@@ -1,38 +1,44 @@
-<app-loader *ngIf="isLoading"></app-loader>
+<div class="pdf-ai-chat-container">
+  <app-loader *ngIf="isLoading"></app-loader>
 
-<div class="container-fluid h-100">
-  <div class="row h-100 flex-column flex-md-row">
+  <div class="row h-100">
     <!-- PDF panel (full width on small screens, 65% on medium and larger) -->
-    <div class="col-12 col-md-8 h-md-100 mb-3 mb-md-0">
-      <mat-card class="h-100 d-flex flex-column">
+    <div class="col-12 col-md-8 mb-3 mb-md-0">
+      <mat-card class="pdf-card">
         <mat-card-header>
           <mat-card-title>PDF Upload and Preview</mat-card-title>
         </mat-card-header>
-        <mat-card-content class="flex-grow-1">
+        <mat-card-content>
           <input
             type="file"
             (change)="onFileSelected($event)"
             accept="application/pdf"
             class="mb-3"
           />
-          <pdf-viewer
-            *ngIf="pdfSrc"
-            [src]="pdfSrc"
-            [render-text]="true"
-            class="pdf-viewer"
-          ></pdf-viewer>
+          <div class="pdf-container">
+            <pdf-viewer
+              *ngIf="pdfSrc"
+              [src]="pdfSrc"
+              [render-text]="true"
+              [original-size]="false"
+              [fit-to-page]="true"
+              [zoom]="1"
+              [show-all]="true"
+              class="pdf-viewer"
+            ></pdf-viewer>
+          </div>
         </mat-card-content>
       </mat-card>
     </div>
 
     <!-- Chat panel (full width on small screens, 35% on medium and larger) -->
-    <div class="col-12 col-md-4 h-md-100">
-      <mat-card class="h-100 d-flex flex-column">
+    <div class="col-12 col-md-4">
+      <mat-card class="chat-card">
         <mat-card-header>
           <mat-card-title>Chat with AI</mat-card-title>
         </mat-card-header>
-        <mat-card-content class="flex-grow-1 d-flex flex-column">
-          <div #chatMessages class="chat-messages flex-grow-1">
+        <mat-card-content>
+          <div #chatMessages class="chat-messages">
             <div
               *ngFor="let message of messages"
               class="message-container"
@@ -55,7 +61,7 @@
               name="message"
               placeholder="Type your message..."
               class="chat-textarea"
-              rows="3"
+              rows="1"
               (input)="adjustTextareaHeight($event)"
             ></textarea>
             <button

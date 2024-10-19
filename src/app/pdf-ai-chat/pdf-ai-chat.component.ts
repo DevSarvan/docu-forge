@@ -73,20 +73,21 @@ export class PdfAiChatComponent implements OnInit, AfterViewChecked {
           this.pdfSrc = event.target?.result as string;
         };
         reader.readAsDataURL(file);
+        this.isLoading = false;
       }
 
-      // TODO: Replace with your actual upload API endpoint
-      this.http.post('/api/upload-pdf', formData).subscribe({
-        next: (response: any) => {
-          console.log('PDF uploaded successfully');
-          this.pdfSrc = response.pdfUrl; // Assuming the API returns the URL of the uploaded PDF
-          this.isLoading = false;
-        },
-        error: (error) => {
-          console.error('Error uploading PDF:', error);
-          this.isLoading = false;
-        },
-      });
+      // // TODO: Replace with your actual upload API endpoint
+      // this.http.post('/api/upload-pdf', formData).subscribe({
+      //   next: (response: any) => {
+      //     console.log('PDF uploaded successfully');
+      //     this.pdfSrc = response.pdfUrl; // Assuming the API returns the URL of the uploaded PDF
+      //     this.isLoading = false;
+      //   },
+      //   error: (error) => {
+      //     console.error('Error uploading PDF:', error);
+      //     this.isLoading = false;
+      //   },
+      // });
     }
   }
 

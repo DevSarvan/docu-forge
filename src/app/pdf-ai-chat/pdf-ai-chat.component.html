@@ -38,6 +38,7 @@
           <mat-card-title>Chat with AI</mat-card-title>
         </mat-card-header>
         <mat-card-content>
+          {{ messages }}
           <div #chatMessages class="chat-messages">
             <div
               *ngFor="let message of messages"

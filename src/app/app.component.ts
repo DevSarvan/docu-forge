@@ -12,5 +12,5 @@ import { PdfAiChatComponent } from './pdf-ai-chat/pdf-ai-chat.component';
   styleUrl: './app.component.scss',
 })
 export class AppComponent {
-  title = 'Docu Forge';
+  title = 'DocuForge';
 }

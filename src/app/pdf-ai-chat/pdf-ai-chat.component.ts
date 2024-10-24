@@ -35,11 +35,14 @@ import { LoaderComponent } from '../loader/loader.component';
 })
 export class PdfAiChatComponent implements OnInit, AfterViewChecked {
   @ViewChild('chatMessages') private chatMessagesContainer!: ElementRef;
+  @ViewChild('fileInput') private fileInput!: ElementRef;
 
   pdfSrc: string | null = null;
   messages: { text: string; isUser: boolean }[] = [];
   currentMessage = '';
   isLoading = true;
+  showPdfPreview = false;
+  fileName = '';
 
   constructor(private http: HttpClient) {}
 
@@ -50,7 +53,7 @@ export class PdfAiChatComponent implements OnInit, AfterViewChecked {
     }, 2000); // Change this to actual asset loading time
   }
 
-  ngAfterViewChecked() { 
+  ngAfterViewChecked() {
     this.scrollToBottom();
   }
 
@@ -64,33 +67,35 @@ export class PdfAiChatComponent implements OnInit, AfterViewChecked {
   onFileSelected(event: any): void {
     const file: File = event.target.files[0];
     if (file) {
+      this.fileName = file.name;
       this.isLoading = true;
       const formData = new FormData();
       formData.append('file', file);
-      
 
-     // TODO: Replace with your actual upload API endpoint
-      this.http.post('http://localhost:8080/api/pdf/upload', formData).subscribe({
-        next: (response: any) => {
-          console.log('PDF uploaded successfully', response);
-          this.messages.push({ text: response.summary, isUser: false });
-         // this.pdfSrc = response.pdfUrl; // Assuming the API returns the URL of the uploaded PDF
-         if (file) {
-          const reader = new FileReader();
-          reader.onload = (event: ProgressEvent<FileReader>) => {
-            this.pdfSrc = event.target?.result as string;
-          };
-          reader.readAsDataURL(file);
-          this.isLoading = false;
-        }
-          this.isLoading = false;
-          console.log(this.messages);
-        },
-        error: (error) => {
-          console.error('Error uploading PDF:', error);
-          this.isLoading = false;
-        },
-      });
+      // TODO: Replace with your actual upload API endpoint
+      this.http
+        .post('http://localhost:8080/api/pdf/upload', formData)
+        .subscribe({
+          next: (response: any) => {
+            console.log('PDF uploaded successfully', response);
+            this.messages.push({ text: response.summary, isUser: false });
+            // this.pdfSrc = response.pdfUrl; // Assuming the API returns the URL of the uploaded PDF
+            if (file) {
+              const reader = new FileReader();
+              reader.onload = (event: ProgressEvent<FileReader>) => {
+                this.pdfSrc = event.target?.result as string;
+              };
+              reader.readAsDataURL(file);
+              this.isLoading = false;
+            }
+            this.isLoading = false;
+            this.showPdfPreview = true;
+          },
+          error: (error) => {
+            console.error('Error uploading PDF:', error);
+            this.isLoading = false;
+          },
+        });
     }
   }
 
@@ -100,17 +105,22 @@ export class PdfAiChatComponent implements OnInit, AfterViewChecked {
       this.isLoading = true;
       // let urlSearchParams = new URLSearchParams();
       // urlSearchParams.append('query', this.currentMessage);
-      // TODO: Replace with your actual AI chat API endpoint 
-      this.http.post('http://localhost:8080/api/pdf/chat?query='+this.currentMessage, { }).subscribe({
-        next: (response: any) => {
-          this.messages.push({ text: response.reply, isUser: false });
-          this.isLoading = false;
-        },
-        error: (error) => {
-          console.error('Error sending message:', error);
-          this.isLoading = false;
-        },
-      });
+      // TODO: Replace with your actual AI chat API endpoint
+      this.http
+        .post(
+          'http://localhost:8080/api/pdf/chat?query=' + this.currentMessage,
+          {}
+        )
+        .subscribe({
+          next: (response: any) => {
+            this.messages.push({ text: response.reply, isUser: false });
+            this.isLoading = false;
+          },
+          error: (error) => {
+            console.error('Error sending message:', error);
+            this.isLoading = false;
+          },
+        });
 
       this.currentMessage = '';
     }
@@ -120,5 +130,13 @@ export class PdfAiChatComponent implements OnInit, AfterViewChecked {
     const textarea = event.target;
     textarea.style.height = 'auto';
     textarea.style.height = textarea.scrollHeight + 'px';
+  }
+
+  triggerFileInput(): void {
+    this.fileInput.nativeElement.click();
+  }
+
+  togglePdfPreview(): void {
+    this.showPdfPreview = !this.showPdfPreview;
   }
 }

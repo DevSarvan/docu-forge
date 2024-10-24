@@ -1,20 +1,14 @@
 <div class="pdf-ai-chat-container">
   <app-loader *ngIf="isLoading"></app-loader>
 
-  <div class="row h-100">
-    <!-- PDF panel (full width on small screens, 65% on medium and larger) -->
-    <div class="col-12 col-md-8 mb-3 mb-md-0">
-      <mat-card class="pdf-card">
+  <div class="content-wrapper">
+    <!-- PDF panel (sliding from left on large screens, sliding down on small screens) -->
+    <div class="pdf-preview-panel" [class.show-preview]="showPdfPreview">
+      <mat-card class="pdf-card h-100">
         <mat-card-header>
-          <mat-card-title>PDF Upload and Preview</mat-card-title>
+          <mat-card-title>PDF Preview</mat-card-title>
         </mat-card-header>
-        <mat-card-content>
-          <input
-            type="file"
-            (change)="onFileSelected($event)"
-            accept="application/pdf"
-            class="mb-3"
-          />
+        <mat-card-content class="flex-grow-1">
           <div class="pdf-container">
             <pdf-viewer
               *ngIf="pdfSrc"
@@ -31,14 +25,43 @@
       </mat-card>
     </div>
 
-    <!-- Chat panel (full width on small screens, 35% on medium and larger) -->
-    <div class="col-12 col-md-4">
+    <!-- Chat panel -->
+    <div class="chat-panel" [class.preview-visible]="showPdfPreview">
       <mat-card class="chat-card">
         <mat-card-header>
           <mat-card-title>Chat with AI</mat-card-title>
         </mat-card-header>
         <mat-card-content>
-          {{ messages }}
+          <div class="file-upload-container mb-3">
+            <input
+              #fileInput
+              type="file"
+              (change)="onFileSelected($event)"
+              accept="application/pdf"
+              class="file-input"
+            />
+            <button
+              mat-raised-button
+              color="primary"
+              (click)="triggerFileInput()"
+            >
+              <mat-icon>upload_file</mat-icon>
+              Upload PDF
+            </button>
+            <button
+              mat-raised-button
+              color="accent"
+              (click)="togglePdfPreview()"
+              [disabled]="!pdfSrc"
+              class="ml-2"
+            >
+              <mat-icon>{{
+                showPdfPreview ? "visibility_off" : "visibility"
+              }}</mat-icon>
+              {{ showPdfPreview ? "Hide Preview" : "Show Preview" }}
+            </button>
+            <span class="file-name" *ngIf="fileName">{{ fileName }}</span>
+          </div>
           <div #chatMessages class="chat-messages">
             <div
               *ngFor="let message of messages"
